@@ -18,6 +18,7 @@
 		570F414A1A14510F005316B9 /* TTMPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F41491A14510F005316B9 /* TTMPlayer.m */; };
 		570F414D1A149D20005316B9 /* TTMBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F414C1A149D20005316B9 /* TTMBoard.m */; };
 		570F41511A14A1F9005316B9 /* TTMRandomPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F41501A14A1F9005316B9 /* TTMRandomPlayer.m */; };
+		570F41541A154BC1005316B9 /* TTMMinMaxPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F41531A154BC1005316B9 /* TTMMinMaxPlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,8 @@
 		570F414C1A149D20005316B9 /* TTMBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTMBoard.m; sourceTree = "<group>"; };
 		570F414F1A14A1F9005316B9 /* TTMRandomPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTMRandomPlayer.h; sourceTree = "<group>"; };
 		570F41501A14A1F9005316B9 /* TTMRandomPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTMRandomPlayer.m; sourceTree = "<group>"; };
+		570F41521A154BC1005316B9 /* TTMMinMaxPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTMMinMaxPlayer.h; sourceTree = "<group>"; };
+		570F41531A154BC1005316B9 /* TTMMinMaxPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTMMinMaxPlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +154,8 @@
 			children = (
 				570F414F1A14A1F9005316B9 /* TTMRandomPlayer.h */,
 				570F41501A14A1F9005316B9 /* TTMRandomPlayer.m */,
+				570F41521A154BC1005316B9 /* TTMMinMaxPlayer.h */,
+				570F41531A154BC1005316B9 /* TTMMinMaxPlayer.m */,
 			);
 			name = Players;
 			sourceTree = "<group>";
@@ -255,6 +260,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				570F41541A154BC1005316B9 /* TTMMinMaxPlayer.m in Sources */,
 				570F414A1A14510F005316B9 /* TTMPlayer.m in Sources */,
 				570F41271A144F87005316B9 /* ViewController.m in Sources */,
 				570F41241A144F87005316B9 /* AppDelegate.m in Sources */,

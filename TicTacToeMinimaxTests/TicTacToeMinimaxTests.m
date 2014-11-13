@@ -69,7 +69,7 @@
 
 
 - (void)wait {
-    [self waitFor:&_isGameFinished timeout:1.0];
+    [self waitFor:&_isGameFinished timeout:6.0];
 }
 
 -(TTMPlayer *)winningPlayer {
@@ -151,8 +151,11 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
 
 }
 
+- (void) performSyncGameWithPlayer1:(TTMPlayer *) player1 player2:(TTMPlayer *)player2 logging:(BOOL) logging {
+    [self performSyncGameWithPlayer1:player1 player2:player2 logging:logging player1MustWin:NO];
+}
 
-- (void) performSyncGameWithPlayer1:(TTMPlayer *) player1 player2:(TTMPlayer *)player2 logging:(BOOL) logging{
+- (void) performSyncGameWithPlayer1:(TTMPlayer *) player1 player2:(TTMPlayer *)player2 logging:(BOOL) logging player1MustWin:(BOOL)player1MustWin{
     TTMBoard *emptyBoard = [[TTMBoard alloc] initWithSide:5];
     TTMGame *game = [[TTMGame alloc] initWithBoard:emptyBoard];
     TestGameDelegate *gameDelegate = [[TestGameDelegate alloc] init];
@@ -163,8 +166,15 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
     [game performGameSync];
     
     TTMBoard *resultBoard = [game copyBoard];
+    XCTAssert([resultBoard isGameFinished], @"Game should be finished");
+
     XCTAssert([gameDelegate winningMark]==[resultBoard winner], @"Winner should be proper");
 
+    
+    if (player1MustWin) {
+        XCTAssert([gameDelegate winningMark]==TTMMarkO, @"Winner should be Player 1");
+
+    }
     
 }
 
@@ -237,5 +247,21 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
         }
     }];
 }
+
+
+
+- (void)testPlayer1IsUnbeatable {
+    const int numGames = 1000;
+    TTMPlayer *player1 = [[TTMRandomPlayer alloc] init];
+    TTMPlayer *player2 = [[TTMRandomPlayer alloc] init];
+    
+    
+    [self measureBlock:^{
+        for (int i=0; i<numGames; i++) {
+            [self performSyncGameWithPlayer1:player1 player2:player2 logging:NO player1MustWin:YES];
+        }
+    }];
+}
+
 
 @end
