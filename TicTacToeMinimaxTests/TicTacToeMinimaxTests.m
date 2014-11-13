@@ -52,11 +52,24 @@
     _playerThatWon = player;
 
 }
-- (void)wait {
-    //Well, thats not so great but will do for now
-    while (!_isGameFinished) {
-        sleep(0.1);
+
+
+- (BOOL)waitFor:(BOOL *)flag timeout:(NSTimeInterval)timeoutSecs {
+    NSDate *timeoutDate = [NSDate dateWithTimeIntervalSinceNow:timeoutSecs];
+    
+    do {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeoutDate];
+        if ([timeoutDate timeIntervalSinceNow] < 0.0) {
+            break;
+        }
     }
+    while (!*flag);
+    return *flag;
+}
+
+
+- (void)wait {
+    [self waitFor:&_isGameFinished timeout:1.0];
 }
 
 -(TTMPlayer *)winningPlayer {
@@ -155,6 +168,25 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
     
 }
 
+
+- (void) performAsyncGameWithPlayer1:(TTMPlayer *) player1 player2:(TTMPlayer *)player2 logging:(BOOL) logging{
+    TTMBoard *emptyBoard = [[TTMBoard alloc] initWithSide:5];
+    TTMGame *game = [[TTMGame alloc] initWithBoard:emptyBoard];
+    TestGameDelegate *gameDelegate = [[TestGameDelegate alloc] init];
+    gameDelegate.logging = logging;
+    game.delegate = gameDelegate;
+    XCTAssert([game addPlayerToGame:player1], @"Should successfully add player to a game");
+    XCTAssert([game addPlayerToGame:player2], @"Should successfully add player to a game");
+    [game startGame];
+    [gameDelegate wait];
+    
+    TTMBoard *resultBoard = [game copyBoard];
+    XCTAssert([gameDelegate winningMark]==[resultBoard winner], @"Winner should be proper");
+    
+    
+}
+
+
 - (void)testRandomPlayerSync {
     // Lets test random players playing with each other. Basically, sanity test for our game engine
     
@@ -167,7 +199,7 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
 
 
 
-- (void)testMuptiplyRandomGameSanity {
+- (void)testMuptiplySyncRandomGameSanity {
     const int numGames = 1000;
     TTMPlayer *player1 = [[TTMRandomPlayer alloc] init];
     TTMPlayer *player2 = [[TTMRandomPlayer alloc] init];
@@ -176,6 +208,32 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
     [self measureBlock:^{
         for (int i=0; i<numGames; i++) {
             [self performSyncGameWithPlayer1:player1 player2:player2 logging:NO];
+        }
+    }];
+}
+
+
+- (void)testRandomPlayerAsync {
+    // Lets test random players playing with each other. Basically, sanity test for our game engine
+    
+    TTMPlayer *player1 = [[TTMRandomPlayer alloc] init];
+    TTMPlayer *player2 = [[TTMRandomPlayer alloc] init];
+    
+    [self performAsyncGameWithPlayer1:player1 player2:player2 logging:YES];
+    
+}
+
+
+
+- (void)testMuptiplyAsyncRandomGameSanity {
+    const int numGames = 1000;
+    TTMPlayer *player1 = [[TTMRandomPlayer alloc] init];
+    TTMPlayer *player2 = [[TTMRandomPlayer alloc] init];
+    
+    
+    [self measureBlock:^{
+        for (int i=0; i<numGames; i++) {
+            [self performAsyncGameWithPlayer1:player1 player2:player2 logging:NO];
         }
     }];
 }

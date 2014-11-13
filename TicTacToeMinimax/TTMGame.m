@@ -44,6 +44,7 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
     TTMBoard *_board;
     NSMutableArray *_players;
     int _currentPlayerIndex;
+    BOOL _isGameSync;
 }
 
 @synthesize delegate = _delegate;
@@ -53,6 +54,7 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
         _board = board;
         _players = [[NSMutableArray alloc] init];
         _currentPlayerIndex = 0;
+        _isGameSync = YES;
     }
     return self;
 }
@@ -61,9 +63,7 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
     return [NSString stringWithFormat:@"<TTMGame: board:\n%@\nIt's turn of %@ >", _board, NSStringWithTTMMark([self markForPlayer:[self _currentPlayer]])];
 }
 
--(void)startGame {
-    assert(0);
-}
+
 
 -(TTMPlayer *)_nextPlayer {
     _currentPlayerIndex ++;
@@ -74,21 +74,18 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
 }
 
 -(TTMPlayer *)_currentPlayer {
-
     return [_players objectAtIndex:_currentPlayerIndex];
 }
 
 -(void)performGameSync {
-    while (![_board isGameFinished]) {
-        [[self _currentPlayer] takeTurnInGame:self];
-    }
-    if ([self.delegate respondsToSelector:@selector(game:player:mark:wonWithStartingCoords:endingCoords:)]) {
-        TTMMark winnerMark = [_board winner];
-        TTMPlayer *winner = [self playerForMark:winnerMark];
-        [self.delegate game:self player:winner mark:winnerMark wonWithStartingCoords:[_board winningCoordsStart] endingCoords:[_board winningCoordsEnd]];
-    }
+    _isGameSync = YES;
+    [[self _currentPlayer] takeTurnInGame:self];
 }
 
+-(void)startGame {
+    _isGameSync = NO;
+    [[self _currentPlayer] takeTurnInGame:self];
+}
 
 -(BOOL)addPlayerToGame:(TTMPlayer*)player {
     if ([_players count]<TTMMarkX_MAX) {
@@ -107,6 +104,24 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
     if ([self.delegate respondsToSelector:@selector(game:player:mark:tookTurnWithCoords:)]) {
         [self.delegate game:self player:player mark:[self markForPlayer:player] tookTurnWithCoords:coords];
     }
+    
+    if ([_board isGameFinished]) {
+        if ([self.delegate respondsToSelector:@selector(game:player:mark:wonWithStartingCoords:endingCoords:)]) {
+            TTMMark winnerMark = [_board winner];
+            TTMPlayer *winner = [self playerForMark:winnerMark];
+            [self.delegate game:self player:winner mark:winnerMark wonWithStartingCoords:[_board winningCoordsStart] endingCoords:[_board winningCoordsEnd]];
+        }
+    } else {
+        if (_isGameSync) {
+            [[self _currentPlayer] takeTurnInGame:self];
+
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^(void){
+                [[self _currentPlayer] takeTurnInGame:self];
+            });
+        }
+    }
+
 }
 -(TTMBoard *)copyBoard {
     
