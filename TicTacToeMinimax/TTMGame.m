@@ -38,7 +38,22 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
     }
     
 }
-
+TTMMark TTMMarkOppositeToMark(TTMMark mark) {
+    switch (mark) {
+        case TTMMarkNULL:
+            return TTMMarkNULL;
+            break;
+        case TTMMarkO:
+            return TTMMarkX;
+            break;
+        case TTMMarkX:
+            return TTMMarkO;
+            break;
+        default:
+            return TTMMarkNULL;
+            break;
+    }
+}
 
 @implementation TTMGame {
     TTMBoard *_board;
@@ -84,7 +99,10 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
 
 -(void)startGame {
     _isGameSync = NO;
-    [[self _currentPlayer] takeTurnInGame:self];
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+
+        [[self _currentPlayer] takeTurnInGame:self];
+    });
 }
 
 -(BOOL)addPlayerToGame:(TTMPlayer*)player {
@@ -102,7 +120,10 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
     [_board setMark:[self markForPlayer:player] atCoords:coords];
     [self _nextPlayer];
     if ([self.delegate respondsToSelector:@selector(game:player:mark:tookTurnWithCoords:)]) {
-        [self.delegate game:self player:player mark:[self markForPlayer:player] tookTurnWithCoords:coords];
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            [self.delegate game:self player:player mark:[self markForPlayer:player] tookTurnWithCoords:coords];
+        });
     }
     if ([_players count]==1) {
         return; //If there is only one player plays this game, do not allow it to play it with itself, let it just to make one move
@@ -111,14 +132,17 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
         if ([self.delegate respondsToSelector:@selector(game:player:mark:wonWithStartingCoords:endingCoords:)]) {
             TTMMark winnerMark = [_board winner];
             TTMPlayer *winner = [self playerForMark:winnerMark];
-            [self.delegate game:self player:winner mark:winnerMark wonWithStartingCoords:[_board winningCoordsStart] endingCoords:[_board winningCoordsEnd]];
+            dispatch_async(dispatch_get_main_queue(), ^{
+
+                [self.delegate game:self player:winner mark:winnerMark wonWithStartingCoords:[_board winningCoordsStart] endingCoords:[_board winningCoordsEnd]];
+            });
         }
     } else {
         if (_isGameSync) {
             [[self _currentPlayer] takeTurnInGame:self];
 
         } else {
-            dispatch_async(dispatch_get_main_queue(), ^(void){
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
                 [[self _currentPlayer] takeTurnInGame:self];
             });
         }

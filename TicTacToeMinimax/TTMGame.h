@@ -27,6 +27,7 @@ typedef enum : int {
 
 
 NSString *NSStringWithTTMMark(TTMMark mark);
+TTMMark TTMMarkOppositeToMark(TTMMark mark);
 
 @class TTMGame;
 @class TTMBoard;
@@ -55,12 +56,9 @@ NSString *NSStringWithTTMMark(TTMMark mark);
 -(BOOL)addPlayerToGame:(TTMPlayer*)player;
 
 
-////////// Player's API
-//That are the only methods players are suppose to call
 -(void)player:(TTMPlayer*)player takesTurn:(TTMCoords)coords;
 -(TTMBoard *)copyBoard;
 -(TTMMark)markForPlayer:(TTMPlayer *)winner;
-//////////////////
 
 
 

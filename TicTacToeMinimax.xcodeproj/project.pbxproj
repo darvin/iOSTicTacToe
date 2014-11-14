@@ -19,6 +19,8 @@
 		570F414D1A149D20005316B9 /* TTMBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F414C1A149D20005316B9 /* TTMBoard.m */; };
 		570F41511A14A1F9005316B9 /* TTMRandomPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F41501A14A1F9005316B9 /* TTMRandomPlayer.m */; };
 		570F41551A1551E8005316B9 /* TTMMinMaxPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F41531A154BC1005316B9 /* TTMMinMaxPlayer.m */; };
+		570F41581A158139005316B9 /* BoardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F41571A158139005316B9 /* BoardView.m */; };
+		570F415C1A15872C005316B9 /* TTMManualPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 570F415B1A15872C005316B9 /* TTMManualPlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +57,10 @@
 		570F41501A14A1F9005316B9 /* TTMRandomPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTMRandomPlayer.m; sourceTree = "<group>"; };
 		570F41521A154BC1005316B9 /* TTMMinMaxPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTMMinMaxPlayer.h; sourceTree = "<group>"; };
 		570F41531A154BC1005316B9 /* TTMMinMaxPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTMMinMaxPlayer.m; sourceTree = "<group>"; };
+		570F41561A158139005316B9 /* BoardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardView.h; sourceTree = "<group>"; };
+		570F41571A158139005316B9 /* BoardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardView.m; sourceTree = "<group>"; };
+		570F415A1A15872C005316B9 /* TTMManualPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTMManualPlayer.h; sourceTree = "<group>"; };
+		570F415B1A15872C005316B9 /* TTMManualPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTMManualPlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +111,8 @@
 				570F412B1A144F87005316B9 /* Images.xcassets */,
 				570F412D1A144F87005316B9 /* LaunchScreen.xib */,
 				570F411E1A144F87005316B9 /* Supporting Files */,
+				570F41561A158139005316B9 /* BoardView.h */,
+				570F41571A158139005316B9 /* BoardView.m */,
 			);
 			path = TicTacToeMinimax;
 			sourceTree = "<group>";
@@ -156,6 +164,8 @@
 				570F41501A14A1F9005316B9 /* TTMRandomPlayer.m */,
 				570F41521A154BC1005316B9 /* TTMMinMaxPlayer.h */,
 				570F41531A154BC1005316B9 /* TTMMinMaxPlayer.m */,
+				570F415A1A15872C005316B9 /* TTMManualPlayer.h */,
+				570F415B1A15872C005316B9 /* TTMManualPlayer.m */,
 			);
 			name = Players;
 			sourceTree = "<group>";
@@ -260,11 +270,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				570F415C1A15872C005316B9 /* TTMManualPlayer.m in Sources */,
 				570F41551A1551E8005316B9 /* TTMMinMaxPlayer.m in Sources */,
 				570F414A1A14510F005316B9 /* TTMPlayer.m in Sources */,
 				570F41271A144F87005316B9 /* ViewController.m in Sources */,
 				570F41241A144F87005316B9 /* AppDelegate.m in Sources */,
 				570F41511A14A1F9005316B9 /* TTMRandomPlayer.m in Sources */,
+				570F41581A158139005316B9 /* BoardView.m in Sources */,
 				570F41211A144F87005316B9 /* main.m in Sources */,
 				570F414D1A149D20005316B9 /* TTMBoard.m in Sources */,
 				570F41471A145102005316B9 /* TTMGame.m in Sources */,

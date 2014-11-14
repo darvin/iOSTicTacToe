@@ -9,5 +9,7 @@
 #import "TTMPlayer.h"
 
 @implementation TTMPlayer
-
+-(void)takeTurnInGame:(TTMGame*)game {
+    @throw([NSException exceptionWithName:@"TTMPlayerException" reason:@"takeTurnInGame: should be implemented" userInfo:nil]);
+}
 @end
