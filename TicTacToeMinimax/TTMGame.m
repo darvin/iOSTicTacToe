@@ -120,10 +120,14 @@ TTMMark TTMMarkOppositeToMark(TTMMark mark) {
     [_board setMark:[self markForPlayer:player] atCoords:coords];
     [self _nextPlayer];
     if ([self.delegate respondsToSelector:@selector(game:player:mark:tookTurnWithCoords:)]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-
+        if (_isGameSync) {
             [self.delegate game:self player:player mark:[self markForPlayer:player] tookTurnWithCoords:coords];
-        });
+
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate game:self player:player mark:[self markForPlayer:player] tookTurnWithCoords:coords];
+            });
+        }
     }
     if ([_players count]==1) {
         return; //If there is only one player plays this game, do not allow it to play it with itself, let it just to make one move
@@ -132,10 +136,15 @@ TTMMark TTMMarkOppositeToMark(TTMMark mark) {
         if ([self.delegate respondsToSelector:@selector(game:player:mark:wonWithStartingCoords:endingCoords:)]) {
             TTMMark winnerMark = [_board winner];
             TTMPlayer *winner = [self playerForMark:winnerMark];
-            dispatch_async(dispatch_get_main_queue(), ^{
-
+            if (_isGameSync) {
                 [self.delegate game:self player:winner mark:winnerMark wonWithStartingCoords:[_board winningCoordsStart] endingCoords:[_board winningCoordsEnd]];
-            });
+
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+
+                    [self.delegate game:self player:winner mark:winnerMark wonWithStartingCoords:[_board winningCoordsStart] endingCoords:[_board winningCoordsEnd]];
+                });
+            }
         }
     } else {
         if (_isGameSync) {

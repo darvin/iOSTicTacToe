@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
@@ -37,7 +38,17 @@
                                     <action selector="sizeValueChanged:" destination="vXZ-lx-hvc" eventType="valueChanged" id="fck-1K-JgM"/>
                                 </connections>
                             </stepper>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Its player 'X''s turn" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DTK-g5-pbr">
+                            <view contentMode="scaleToFill" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="400" translatesAutoresizingMaskIntoConstraints="NO" id="hfA-Xg-Yic" customClass="BoardView">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <variation key="widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="0.0" y="94" width="400" height="400"/>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="0.0" y="94" width="301" height="272"/>
+                                </variation>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Its player 'X''s turn" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DTK-g5-pbr">
                                 <rect key="frame" x="301" y="16" width="144" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -45,26 +56,22 @@
                                 <variation key="widthClass=compact" fixedFrame="YES">
                                     <rect key="frame" x="0.0" y="530" width="400" height="21"/>
                                 </variation>
-                            </label>
-                            <view contentMode="scaleToFill" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="400" translatesAutoresizingMaskIntoConstraints="NO" id="hfA-Xg-Yic" customClass="BoardView">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <variation key="widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="94" width="400" height="400"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="-2" y="401" width="272" height="29"/>
                                 </variation>
-                            </view>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <variation key="default">
                             <mask key="subviews">
-                                <exclude reference="DTK-g5-pbr"/>
                                 <exclude reference="hfA-Xg-Yic"/>
+                                <exclude reference="DTK-g5-pbr"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
                             <mask key="subviews">
-                                <include reference="DTK-g5-pbr"/>
                                 <include reference="hfA-Xg-Yic"/>
+                                <include reference="DTK-g5-pbr"/>
                             </mask>
                         </variation>
                     </view>
@@ -76,7 +83,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="138" y="136"/>
+            <point key="canvasLocation" x="138" y="135.75"/>
         </scene>
     </scenes>
 </document>
