@@ -16,6 +16,7 @@
     TTMMark _winner;
     TTMCoords _winningCoordsStart;
     TTMCoords _winningCoordsEnd;
+    TTMCoords _lastCoords;
 }
 @synthesize size = _size;
 
@@ -27,10 +28,7 @@
     if (self=[super init]) {
         _size = TTMCoordsMake(side, side);
         _marks = malloc(_size.x*_size.y*sizeof(TTMMark));
-        _winner = TTMMarkNULL;
-        _winningCoordsEnd = _winningCoordsStart = TTMCoordsMake(-1, -1);
-        _isGameFinished = NO; //just for style
-
+        [self _resetWinnerCalculations];
         if (marks!=NULL) {
             for (int i=0; i<_size.x*_size.y; i++) {
                 _marks[i] = marks[i];
@@ -56,6 +54,8 @@
             NSString *markFormat = @" %@ ";
             if (TTMCoordsEqualToCoords(coords, _winningCoordsStart)||TTMCoordsEqualToCoords(coords, _winningCoordsEnd)) {
                 markFormat = @"<%@>";
+            } else if (TTMCoordsEqualToCoords(coords, _lastCoords)) {
+                markFormat = @"*%@*";
             }
             [result appendFormat:markFormat,NSStringWithTTMMark(mark)];
             
@@ -82,27 +82,45 @@
     if (coords.x<0||coords.x>_size.x||coords.y<0||coords.y>_size.y) {
         return -1;
     } else {
-        return coords.x+coords.y*_size.y;
+        return coords.x+coords.y*_size.x;
     }
+}
+
+-(TTMCoords)coordsForIndex:(int)index {
+    return TTMCoordsMake(index%_size.x, index/_size.x);
 }
 
 -(BOOL)setMark:(TTMMark)mark atCoords:(TTMCoords)coords {
-    if ([self _marksIndexForCoords:coords]==-1||[self markAtCoords:coords]!=TTMMarkNULL) {
+    return [self setMark:mark atIndex:[self _marksIndexForCoords:coords]];
+}
+-(TTMMark)markAtCoords:(TTMCoords)coords {
+    return [self markAtIndex:[self _marksIndexForCoords:coords]];
+}
+
+-(BOOL)setMark:(TTMMark)mark atIndex:(int)index {
+    [self _resetWinnerCalculations];
+    if (index<0||index>=[self marksCount]) {
         return NO;
     } else {
-        _marks[[self _marksIndexForCoords:coords]] = mark;
+        _lastCoords = [self coordsForIndex:index];
+        _marks[index] = mark;
         return YES;
     }
 }
--(TTMMark)markAtCoords:(TTMCoords)coords {
-    if ([self _marksIndexForCoords:coords]==-1) {
+-(TTMMark)markAtIndex:(int)index {
+    if (index<0||index>=[self marksCount]) {
         return TTMMarkNULL;
     } else {
-        return _marks[[self _marksIndexForCoords:coords]];
+        return _marks[index];
     }
 }
 
 
+-(void) _resetWinnerCalculations {
+    _winner = TTMMarkNULL;
+    _winningCoordsEnd = _lastCoords =_winningCoordsStart = TTMCoordsMake(-1, -1);
+    _isGameFinished = NO;
+}
 
 -(void) _ensureWinnerIsCalculated {
     if (_isGameFinished) {
@@ -221,6 +239,14 @@
 -(TTMCoords)winningCoordsEnd {
     [self _ensureWinnerIsCalculated];
     return _winningCoordsEnd;
+}
+
+-(TTMMark *)marks {
+    return _marks;
+}
+
+-(int)marksCount {
+    return _size.x*_size.y;
 }
 
 @end

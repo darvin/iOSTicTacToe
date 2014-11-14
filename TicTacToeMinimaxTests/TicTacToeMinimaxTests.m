@@ -12,18 +12,19 @@
 #import "TTMGame.h"
 #import "TTMBoard.h"
 #import "TTMRandomPlayer.h"
-
+#import "TTMMinMaxPlayer.h"
 
 
 @interface TestGameDelegate : NSObject<TTMGameDelegate> {
     BOOL _isGameFinished;
     TTMMark _markThatWon;
     TTMPlayer * _playerThatWon;
+    TTMCoords _lastTurnCoords;
 }
 @property BOOL logging;
 -(TTMPlayer *)winningPlayer;
 -(TTMMark)winningMark;
-
+-(TTMCoords)lastTurnCoords;
 - (void)wait;
 @end
 
@@ -31,11 +32,14 @@
 
 @synthesize logging = _logging;
 
+
+
 -(void)game:(TTMGame *)game player:(TTMPlayer*) player mark:(TTMMark) mark tookTurnWithCoords:(TTMCoords) coords {
     if (_logging) {
         NSLog(@"Player %@ took turn. Game state: %@", NSStringWithTTMMark(mark), game);
 
     }
+    _lastTurnCoords = coords;
 }
 
 -(void)game:(TTMGame *)game player:(TTMPlayer*) player mark:(TTMMark) mark wonWithStartingCoords:(TTMCoords) coords endingCoords:(TTMCoords) coords {
@@ -71,6 +75,9 @@
 - (void)wait {
     [self waitFor:&_isGameFinished timeout:6.0];
 }
+-(TTMCoords)lastTurnCoords {
+    return _lastTurnCoords;
+}
 
 -(TTMPlayer *)winningPlayer {
     return _playerThatWon;
@@ -104,6 +111,15 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
     TTMBoard *board = [[TTMBoard alloc] initWithSide:side marks:marks];
     NSCAssert([board winner]==expectedMark, @"winner of the board should be defined correctly");
 }
+
+- (void)testBoardSupport {
+    TTMBoard *board = [[TTMBoard alloc] initWithSide:3];
+    NSCAssert(TTMCoordsEqualToCoords([board coordsForIndex:0], TTMCoordsMake(0, 0)), @"Coords from index should be correct");
+    NSCAssert(TTMCoordsEqualToCoords([board coordsForIndex:2], TTMCoordsMake(2, 0)), @"Coords from index should be correct");
+    NSCAssert(TTMCoordsEqualToCoords([board coordsForIndex:8], TTMCoordsMake(2, 2)), @"Coords from index should be correct");
+}
+
+
 - (void)testBoard {
     //I was thinking to make it #defines and wish anyone "happy debugging", but changed my mind and made them into local constants
  
@@ -152,11 +168,11 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
 }
 
 - (void) performSyncGameWithPlayer1:(TTMPlayer *) player1 player2:(TTMPlayer *)player2 logging:(BOOL) logging {
-    [self performSyncGameWithPlayer1:player1 player2:player2 logging:logging player1MustWin:NO];
+    [self performSyncGameWithPlayer1:player1 player2:player2 logging:logging player1MustWin:NO boardSize:4];
 }
 
-- (void) performSyncGameWithPlayer1:(TTMPlayer *) player1 player2:(TTMPlayer *)player2 logging:(BOOL) logging player1MustWin:(BOOL)player1MustWin{
-    TTMBoard *emptyBoard = [[TTMBoard alloc] initWithSide:5];
+- (void) performSyncGameWithPlayer1:(TTMPlayer *) player1 player2:(TTMPlayer *)player2 logging:(BOOL) logging player1MustWin:(BOOL)player1MustWin boardSize:(int)boardSize{
+    TTMBoard *emptyBoard = [[TTMBoard alloc] initWithSide:boardSize];
     TTMGame *game = [[TTMGame alloc] initWithBoard:emptyBoard];
     TestGameDelegate *gameDelegate = [[TestGameDelegate alloc] init];
     gameDelegate.logging = logging;
@@ -172,7 +188,7 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
 
     
     if (player1MustWin) {
-        XCTAssert([gameDelegate winningMark]==TTMMarkO, @"Winner should be Player 1");
+        XCTAssert([gameDelegate winningMark]==TTMMarkO||[gameDelegate winningMark]==TTMMarkNULL, @"Winner should be Player 1");
 
     }
     
@@ -228,39 +244,73 @@ void TTMAssertBoardWins(TTMMark*marks, int side, TTMMark expectedMark) {
     
     TTMPlayer *player1 = [[TTMRandomPlayer alloc] init];
     TTMPlayer *player2 = [[TTMRandomPlayer alloc] init];
-    
-    [self performAsyncGameWithPlayer1:player1 player2:player2 logging:YES];
-    
+    [self measureBlock:^{
+        
+        [self performAsyncGameWithPlayer1:player1 player2:player2 logging:YES];
+    }];
 }
 
 
 
 - (void)testMuptiplyAsyncRandomGameSanity {
-    const int numGames = 1000;
+    const int numGames = 10000;
     TTMPlayer *player1 = [[TTMRandomPlayer alloc] init];
     TTMPlayer *player2 = [[TTMRandomPlayer alloc] init];
     
     
+    for (int i=0; i<numGames; i++) {
+        [self performAsyncGameWithPlayer1:player1 player2:player2 logging:NO];
+    }
+}
+
+- (void) _checkCorrectMoveForPlayer:(TTMPlayer*) player marks:(TTMMark*)marks side:(int) side expectedMove:(TTMCoords) expectedMove {
+    TTMBoard *emptyBoard = [[TTMBoard alloc] initWithSide:side marks:marks];
+    TTMGame *game = [[TTMGame alloc] initWithBoard:emptyBoard];
+    TestGameDelegate *gameDelegate = [[TestGameDelegate alloc] init];
+    game.delegate = gameDelegate;
+    gameDelegate.logging = YES;
+
+    XCTAssert([game addPlayerToGame:player], @"Should successfully add player to a game");
+    [game performGameSync];
+    
+    
+    XCTAssert(TTMCoordsEqualToCoords([gameDelegate lastTurnCoords], expectedMove), @"Move should be proper");
+
+}
+- (void)testMinimaxIsSane {
+    const int X = TTMMarkX;
+    const int O = TTMMarkO;
+    const int _  =TTMMarkNULL;
+    const int side = 3;
+    
+    TTMPlayer *player = [[TTMMinMaxPlayer alloc] init];
+    TTMMark b1[side*side]  = {
+    O,  O,  X,
+    O,  _,  X,
+    _,  _,  _
+    };
+    
+    TTMCoords exp1 = TTMCoordsMake(0, 2);
+    [self _checkCorrectMoveForPlayer:player marks:b1 side:side expectedMove:exp1];
+}
+
+- (void)testMinimax {
+    TTMPlayer *player1 = [[TTMMinMaxPlayer alloc] init];
+    TTMPlayer *player2 = [[TTMRandomPlayer alloc] init];
     [self measureBlock:^{
-        for (int i=0; i<numGames; i++) {
-            [self performAsyncGameWithPlayer1:player1 player2:player2 logging:NO];
-        }
+
+        [self performSyncGameWithPlayer1:player1 player2:player2 logging:YES player1MustWin:YES boardSize:3];
     }];
 }
 
-
-
-- (void)testPlayer1IsUnbeatable {
-    const int numGames = 1000;
-    TTMPlayer *player1 = [[TTMRandomPlayer alloc] init];
+- (void)testMinimaxIsUnbeatable {
+    const int numGames = 10;
+    TTMPlayer *player1 = [[TTMMinMaxPlayer alloc] init];
     TTMPlayer *player2 = [[TTMRandomPlayer alloc] init];
     
-    
-    [self measureBlock:^{
-        for (int i=0; i<numGames; i++) {
-            [self performSyncGameWithPlayer1:player1 player2:player2 logging:NO player1MustWin:YES];
-        }
-    }];
+    for (int i=0; i<numGames; i++) {
+            [self performSyncGameWithPlayer1:player1 player2:player2 logging:NO player1MustWin:YES boardSize:3];
+    }
 }
 
 

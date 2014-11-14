@@ -104,7 +104,9 @@ NSString *NSStringWithTTMMark(TTMMark mark) {
     if ([self.delegate respondsToSelector:@selector(game:player:mark:tookTurnWithCoords:)]) {
         [self.delegate game:self player:player mark:[self markForPlayer:player] tookTurnWithCoords:coords];
     }
-    
+    if ([_players count]==1) {
+        return; //If there is only one player plays this game, do not allow it to play it with itself, let it just to make one move
+    }
     if ([_board isGameFinished]) {
         if ([self.delegate respondsToSelector:@selector(game:player:mark:wonWithStartingCoords:endingCoords:)]) {
             TTMMark winnerMark = [_board winner];

@@ -20,7 +20,10 @@
 -(BOOL)setMark:(TTMMark)mark atCoords:(TTMCoords)coords;
 -(TTMMark)markAtCoords:(TTMCoords)coords;
 
-
+-(BOOL)setMark:(TTMMark)mark atIndex:(int)index;
+-(TTMMark)markAtIndex:(int)index;
+-(int)marksCount;
+-(TTMCoords)coordsForIndex:(int)index;
 -(TTMMark)winner;
 -(BOOL)isFull;
 -(BOOL)isGameFinished;
