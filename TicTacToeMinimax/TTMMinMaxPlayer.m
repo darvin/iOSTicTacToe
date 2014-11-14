@@ -47,10 +47,6 @@ int minmaxBestMove(TTMBoard *board, TTMMark player, int*resultScore) {
             int opponentScore = minimaxScoreBoard(board, opponent);
             int score = -opponentScore;
             [board setMark:TTMMarkNULL atIndex:i];
-//            if(score==1) {
-//                *resultScore = score;
-//                return i;
-//            }
             if (score>maxScore) {
                 maxScore = score;
                 move = i;
